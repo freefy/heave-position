@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>重力场</title>
+    <style>
+        #box {
+            width: 100px;
+            height: 100px;
+            position: absolute;
+            background-color:brown;
+            border-radius:50%;
+            left: 0;
+            top: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="box"></div>
+    <script>
+        var oDiv = document.getElementById('box');
+        var lastLeft = oDiv.offsetLeft;
+        var lastTop = oDiv.offsetTop;
+       oDiv.onmousedown = function(e){
+        clearInterval(this.timer);
+           var event = e||window.event;
+           var disX =e.clientX - this.offsetLeft;
+           var disY = e.clientY - this.offsetTop;
+           var that = this;
+           var speedX =0;
+           var speedY = 0;
+           
+           document.onmousemove = function(e){
+               var newLeft = e.clientX - disX;
+               var newTop = e.clientY -disY;
+               speedX = newLeft - lastLeft;
+               speedY =newTop - lastTop;
+               lastLeft = newLeft;
+               lastTop = newTop;
+               that.style.left = newLeft + 'px';
+               that.style.top = newTop +'px';
+           }
+           document.onmouseup = function(){
+               document.onmouseup = null;
+               document.onmousemove = null;
+               startMove(oDiv,speedX ,speedY);
+           }
+       }
+     
+        function startMove(dom,speedX,speedY) {
+            clearInterval(dom.timer);
+            var g = 6;
+            var u = 0.8;
+
+            dom.timer = setInterval(function () {
+                speedY += g;
+                var newLeft = dom.offsetLeft + speedX;
+                var newTop = dom.offsetTop + speedY;
+                if (newTop >= document.documentElement.clientHeight - dom.offsetHeight) {
+                    speedY *= -1;
+                    speedY = speedY * u;
+                    speedX *= u;
+
+                    newTop = document.documentElement.clientHeight - dom.offsetHeight;
+                }
+                if (newTop <= 0) {
+                    speedY *= -1;
+                    speedY *= u;
+                    speedX *= u;
+                    newTop = 0;
+                }
+                if (newLeft >= document.documentElement.clientWidth - dom.offsetWidth) {
+                    speedX *= -1;
+                    speedX *= u;
+                    speedY *= u;
+                    newLeft = document.documentElement.clientWidth - dom.offsetWidth;
+                }
+                if (newLeft <= 0) {
+                    speedX *= -1;
+                    speedX *= u;
+                    speedY *= u;
+                    newLeft = 0;
+                }
+                if (Math.abs(speedX) < 1) {
+                    speedX = 0;
+                }
+                if (Math.abs(speedY) < 1) {
+                    speedY = 0;
+                }
+                if (speedX == 0 && speedY == 0 && newTop == document.documentElement.clientHeight - dom.offsetHeight) {
+                    clearInterval(dom.timer);
+                }
+                dom.style.left = newLeft + 'px';
+                dom.style.top = newTop + 'px';
+            }, 30)
+        }
+    </script>
+</body>
+
+</html>
